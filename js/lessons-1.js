@@ -1,0 +1,493 @@
+/*
+ * Lessons 1–6. Text conventions (converted by content.js):
+ *   ¶  = a backtick       $_{  = ${
+ * Prose supports `inline code` and **bold**.
+ */
+(function () {
+  const T = (name, fn) => ({ name, fn });
+
+  (globalThis.LESSON_PARTS = globalThis.LESSON_PARTS || []).push(
+    // ───────────────────────────────────────── 1
+    {
+      id: 'hello',
+      title: 'Hello, JavaScript',
+      time: '10 min',
+      blocks: [
+        { p: 'JavaScript (JS) is the programming language of the web. Every website you use runs it, and it can also run servers, phones apps and games. If you learn only **one** language, this is a great one.' },
+        { h: 'How to think about code' },
+        { p: 'A program is just a list of **instructions** the computer follows from top to bottom. You write the instructions; the computer does them exactly — no more, no less. It never guesses what you meant, which is why small typos matter.' },
+        { h: 'Your first instruction' },
+        { p: '`console.log(...)` prints something to the **console** — a notepad where programs write messages. It is the main way you will see what your code is doing. Press **Run** (or Ctrl/Cmd + Enter) below.' },
+        { run: 'console.log("Hello, world!");\nconsole.log(2 + 3);\nconsole.log("2 + 3");' },
+        { p: 'Notice the difference: `2 + 3` is maths (prints 5), while `"2 + 3"` in quotes is just **text** (prints exactly what is inside). Text in quotes is called a **string**.' },
+        { h: 'Comments and semicolons' },
+        { run: '// Anything after two slashes is a comment: the computer ignores it.\n// Comments are notes for humans.\nconsole.log("I run!"); // the semicolon ends an instruction\n\n/* Multi-line\n   comment */' },
+        { tip: 'Edit any example and press Run again. Breaking things on purpose is the fastest way to learn. You cannot damage anything.' },
+        { warn: 'Capital letters matter: `console.log` works, `Console.Log` does not. Brackets, quotes and parentheses must always come in matching pairs.' },
+        { h: 'Reading errors' },
+        { p: 'Errors are not failures — they are the computer telling you what went wrong and usually where. Try running this broken example:' },
+        { run: 'console.log("this line is fine");\nconsole.lg("typo here");' },
+        { p: 'It says `console.lg is not a function`. Translation: "`lg` doesn\'t exist on console — did you mean `log`?" Read the message slowly; it is almost always helpful.' },
+      ],
+      quiz: [
+        { q: 'What does console.log("5 + 5") print?', options: ['10', '5 + 5', 'Nothing', 'An error'], answer: 1, why: 'Inside quotes it is just text, so it prints exactly 5 + 5.' },
+        { q: 'What is a comment for?', options: ['Running faster', 'Notes for humans, ignored by the computer', 'Printing text', 'Fixing errors'], answer: 1, why: 'The computer skips comments completely.' },
+        { q: 'Which line is written correctly?', options: ['Console.log("hi");', 'console.log("hi";', 'console.log("hi");', 'console.log(hi");'], answer: 2, why: 'Lowercase console, matching brackets and quotes.' },
+      ],
+      exercises: [
+        {
+          id: 'hello-1',
+          title: 'Say hello',
+          prompt: 'Use `console.log` to print exactly: **Hello, World!** (capital H and W, comma, exclamation mark).',
+          starter: '// Write your code below\n',
+          expose: [],
+          hint: 'console.log("Hello, World!");  — don\'t forget the quotes.',
+          solution: 'console.log("Hello, World!");',
+          tests: [
+            T('prints something', (e, { logs }) => {
+              if (logs.length === 0) throw new Error('Nothing was printed. Did you call console.log(...)?');
+            }),
+            T('prints exactly "Hello, World!"', (e, { logs, expect }) => expect(logs[0]).toBe('Hello, World!')),
+          ],
+        },
+        {
+          id: 'hello-2',
+          title: 'Be the calculator',
+          prompt: 'Print the result of **12 × 12** using `console.log`. Let JavaScript do the maths — use the `*` symbol for multiply.',
+          starter: '',
+          expose: [],
+          hint: 'console.log(12 * 12);',
+          solution: 'console.log(12 * 12);',
+          tests: [
+            T('prints one line', (e, { logs, expect }) => expect(logs.length).toBe(1)),
+            T('prints 144', (e, { logs, expect }) => expect(logs[0]).toBe('144')),
+            T('uses the * operator', (e, { code, expect }) => expect(/\*/.test(code)).toBe(true)),
+          ],
+        },
+        {
+          id: 'hello-3',
+          title: 'Three lines',
+          prompt: 'Print **three separate lines** in this order: `I`, `love`, `JavaScript`. (Three `console.log` calls.)',
+          starter: '',
+          expose: [],
+          hint: 'Each console.log makes one line:\nconsole.log("I");\nconsole.log("love");\n…',
+          solution: 'console.log("I");\nconsole.log("love");\nconsole.log("JavaScript");',
+          tests: [T('prints I / love / JavaScript', (e, { logs, expect }) => expect(logs).toEqual(['I', 'love', 'JavaScript']))],
+        },
+      ],
+    },
+
+    // ───────────────────────────────────────── 2
+    {
+      id: 'variables',
+      title: 'Variables & Data Types',
+      time: '15 min',
+      blocks: [
+        { p: 'A **variable** is a labelled box that stores a value so you can use it later. You give the box a name, put something in it, and refer to it by name.' },
+        { run: 'let age = 25;\nconsole.log(age);\n\nage = 26;            // change what is in the box\nconsole.log(age);\n\nconst birthYear = 2000;   // const = can never be reassigned\nconsole.log(birthYear);' },
+        { h: 'let vs const' },
+        { list: ['`const` — for values that will **not** be reassigned. Use this by default.', '`let` — for values that **will** change later (counters, totals…).', '`var` — the old way. Avoid it; it has confusing rules.'] },
+        { run: 'const pi = 3.14;\npi = 3;   // ← TypeError: Assignment to constant variable.' },
+        { h: 'Naming rules' },
+        { list: ['Letters, digits, `_` and `$`; cannot start with a digit.', 'Case-sensitive: `score` and `Score` are different.', 'Convention: **camelCase** — `firstName`, `totalPrice`.', 'Pick names that explain themselves: `price` beats `x`.'] },
+        { h: 'The basic data types' },
+        { p: 'Every value has a **type**. There are only a handful you need at first:' },
+        { run: 'console.log(typeof "hello");   // string  — text\nconsole.log(typeof 42);        // number  — integers & decimals\nconsole.log(typeof 3.14);      // number\nconsole.log(typeof true);      // boolean — true or false\nconsole.log(typeof undefined); // undefined — "no value yet"\nconsole.log(typeof null);      // "object" (a famous old bug; null means "intentionally empty")\nconsole.log(typeof [1, 2]);    // object  — arrays are objects' },
+        { h: 'Converting between types' },
+        { p: 'Values from forms and the web often arrive as **strings**, even when they look like numbers. Convert them on purpose:' },
+        { run: 'const input = "7";\nconsole.log(input + 3);          // "73" — string glue!\nconsole.log(Number(input) + 3);  // 10\nconsole.log(String(99) + "!");   // "99!"\nconsole.log(Number("abc"));      // NaN = "Not a Number"' },
+        { warn: 'The `+` symbol adds numbers but **glues** strings together. `"5" + 1` is `"51"`, not `6`. This is the #1 beginner surprise.' },
+      ],
+      quiz: [
+        { q: 'Which keyword should you use for a value that never changes?', options: ['let', 'const', 'var', 'change'], answer: 1, why: 'const prevents accidental reassignment.' },
+        { q: 'What is "5" + 1 ?', options: ['6', '"51"', 'NaN', 'An error'], answer: 1, why: 'A string plus a number glues them together as text.' },
+        { q: 'What does typeof true return?', options: ['"string"', '"number"', '"boolean"', '"true"'], answer: 2, why: 'true and false are booleans.' },
+        { q: 'Which name follows the camelCase convention?', options: ['first_name', 'FirstName', 'firstName', 'first-name'], answer: 2, why: 'camelCase starts lowercase, then capitalises each new word.' },
+      ],
+      exercises: [
+        {
+          id: 'var-1',
+          title: 'Declare and change',
+          prompt: '1. Create a **constant** `planet` containing the text `"Earth"`.\n2. Create a variable `moons` (use `let`) containing the number `1`.\n3. Then change `moons` so it holds `2`.',
+          starter: '// 1. const planet ...\n// 2. let moons ...\n// 3. reassign moons\n',
+          expose: ['planet', 'moons'],
+          hint: 'const planet = "Earth";\nlet moons = 1;\nmoons = 2;',
+          solution: 'const planet = "Earth";\nlet moons = 1;\nmoons = 2;',
+          tests: [
+            T('planet is "Earth"', (e, { expect }) => expect(e.planet).toBe('Earth')),
+            T('moons ends up as 2', (e, { expect }) => expect(e.moons).toBe(2)),
+            T('moons was declared with let', (e, { code, expect }) => expect(/let\s+moons/.test(code)).toBe(true)),
+          ],
+        },
+        {
+          id: 'var-2',
+          title: 'Fix the string trap',
+          prompt: 'The variable `input` holds the **string** `"5"`. Create a variable `total` equal to `input` converted to a number, **plus 10**. It should be the number `15`, not `"510"`.',
+          starter: 'const input = "5";\n\n// create total below\n',
+          expose: ['total'],
+          hint: 'const total = Number(input) + 10;',
+          solution: 'const input = "5";\nconst total = Number(input) + 10;',
+          tests: [
+            T('total is a number', (e, { expect }) => expect(e.total).toBeType('number')),
+            T('total is 15', (e, { expect }) => expect(e.total).toBe(15)),
+          ],
+        },
+        {
+          id: 'var-3',
+          title: 'Swap two boxes',
+          prompt: 'Variables `a` and `b` are set up for you. Make them **swap values** so `a` becomes `"second"` and `b` becomes `"first"`. (Hint: you need a third temporary variable, just like swapping two drinks between glasses.)',
+          starter: 'let a = "first";\nlet b = "second";\n\n// swap them here\n',
+          expose: ['a', 'b'],
+          hint: 'let temp = a;\na = b;\nb = temp;',
+          solution: 'let a = "first";\nlet b = "second";\nlet temp = a;\na = b;\nb = temp;',
+          tests: [T('a is "second"', (e, { expect }) => expect(e.a).toBe('second')), T('b is "first"', (e, { expect }) => expect(e.b).toBe('first'))],
+        },
+      ],
+    },
+
+    // ───────────────────────────────────────── 3
+    {
+      id: 'strings-numbers',
+      title: 'Numbers & Strings',
+      time: '15 min',
+      blocks: [
+        { h: 'Maths operators' },
+        { run: 'console.log(10 + 3);   // 13  add\nconsole.log(10 - 3);   // 7   subtract\nconsole.log(10 * 3);   // 30  multiply\nconsole.log(10 / 3);   // 3.333…  divide\nconsole.log(10 % 3);   // 1   remainder ("modulo")\nconsole.log(2 ** 5);   // 32  power\n\nlet score = 5;\nscore += 2;   // same as score = score + 2\nscore++;      // same as score = score + 1\nconsole.log(score);' },
+        { tip: 'The remainder operator `%` is incredibly useful: `n % 2 === 0` means "n is even". You will use it constantly.' },
+        { run: 'console.log(Math.round(4.6));  // 5\nconsole.log(Math.floor(4.9));  // 4  (round down)\nconsole.log(Math.ceil(4.1));   // 5  (round up)\nconsole.log(Math.max(3, 9, 4));// 9\nconsole.log(Math.random());    // random between 0 and 1\nconsole.log(0.1 + 0.2);        // 0.30000000000000004 (all languages do this!)' },
+        { h: 'Strings' },
+        { run: 'const name = "Ada";\nconsole.log(name.length);          // 3\nconsole.log(name[0]);              // "A" (counting starts at 0!)\nconsole.log(name.toUpperCase());   // "ADA"\nconsole.log("  hi  ".trim());      // "hi"\nconsole.log("a-b-c".split("-"));   // ["a","b","c"]\nconsole.log("hello".includes("ell")); // true\nconsole.log("hello".slice(1, 3));  // "el"\nconsole.log("ha".repeat(3));       // "hahaha"\nconsole.log("cat".replace("c", "b")); // "bat"' },
+        { h: 'Template literals (the modern way to build text)' },
+        { p: 'Use **backticks** (¶) instead of quotes, and put any expression inside `$_{ }`:' },
+        { run: 'const user = "Ada";\nconst items = 3;\nconsole.log(¶Hello, $_{user}! You have $_{items} items.¶);\nconsole.log(¶Total: $_{items * 4.5} dollars¶);\n\n// the old, clumsier way:\nconsole.log("Hello, " + user + "!");' },
+        { warn: 'Strings are **immutable**: methods like `toUpperCase()` give you a *new* string, they never change the original. To keep the result, store it: `const big = name.toUpperCase();`' },
+      ],
+      quiz: [
+        { q: 'What is 17 % 5 ?', options: ['3', '2', '3.4', '12'], answer: 1, why: '17 = 3×5 + 2, so the remainder is 2.' },
+        { q: 'What does "hello"[1] give?', options: ['"h"', '"e"', '"l"', 'An error'], answer: 1, why: 'Counting starts at 0, so index 1 is the second letter.' },
+        { q: 'Which creates a template literal?', options: ['"Hi $_{name}"', '¶Hi $_{name}¶', "'Hi $_{name}'", '(Hi $_{name})'], answer: 1, why: 'Only backticks interpolate $_{ }.' },
+      ],
+      exercises: [
+        {
+          id: 'str-1',
+          title: 'greet()',
+          prompt: 'Write a function `greet(name)` that **returns** `"Hello, <name>!"`. Example: `greet("Ada")` → `"Hello, Ada!"`.\n\n(Functions are the next-but-two lesson in depth — for now, fill in the blank return line.)',
+          starter: 'function greet(name) {\n  return ; // ← build the string here\n}\n',
+          expose: ['greet'],
+          hint: 'return ¶Hello, $_{name}!¶;',
+          solution: 'function greet(name) {\n  return ¶Hello, $_{name}!¶;\n}',
+          tests: [
+            T('greet("Ada")', (e, { expect }) => expect(e.greet('Ada')).toBe('Hello, Ada!')),
+            T('greet("World")', (e, { expect }) => expect(e.greet('World')).toBe('Hello, World!')),
+            T('greet("")', (e, { expect }) => expect(e.greet('')).toBe('Hello, !')),
+          ],
+        },
+        {
+          id: 'str-2',
+          title: 'shout()',
+          prompt: 'Write `shout(text)` that removes spaces from both ends, makes it UPPERCASE, and adds `"!"` at the end.\n`shout("  hi there ")` → `"HI THERE!"`',
+          starter: 'function shout(text) {\n  \n}\n',
+          expose: ['shout'],
+          hint: 'Chain the methods: text.trim().toUpperCase() + "!"',
+          solution: 'function shout(text) {\n  return text.trim().toUpperCase() + "!";\n}',
+          tests: [
+            T('shout("hello")', (e, { expect }) => expect(e.shout('hello')).toBe('HELLO!')),
+            T('trims spaces', (e, { expect }) => expect(e.shout('  hi there ')).toBe('HI THERE!')),
+            T('keeps existing capitals', (e, { expect }) => expect(e.shout('JavaScript')).toBe('JAVASCRIPT!')),
+          ],
+        },
+        {
+          id: 'str-3',
+          title: 'Temperature converter',
+          prompt: 'Write `celsiusToF(c)` that converts Celsius to Fahrenheit. Formula: **c × 9 ÷ 5 + 32**.',
+          starter: 'function celsiusToF(c) {\n  \n}\n',
+          expose: ['celsiusToF'],
+          hint: 'return c * 9 / 5 + 32;',
+          solution: 'function celsiusToF(c) {\n  return c * 9 / 5 + 32;\n}',
+          tests: [
+            T('0°C = 32°F', (e, { expect }) => expect(e.celsiusToF(0)).toBe(32)),
+            T('100°C = 212°F', (e, { expect }) => expect(e.celsiusToF(100)).toBe(212)),
+            T('-40°C = -40°F', (e, { expect }) => expect(e.celsiusToF(-40)).toBe(-40)),
+            T('37°C ≈ 98.6°F', (e, { expect }) => expect(e.celsiusToF(37)).toBeCloseTo(98.6, 1)),
+          ],
+        },
+        {
+          id: 'str-4',
+          title: 'Initials',
+          prompt: 'Write `initials(first, last)` that returns the two capital initials. `initials("ada", "lovelace")` → `"AL"`.',
+          starter: 'function initials(first, last) {\n  \n}\n',
+          expose: ['initials'],
+          hint: 'Take the first letter with [0] of each name, uppercase them, and add them together.',
+          solution: 'function initials(first, last) {\n  return (first[0] + last[0]).toUpperCase();\n}',
+          tests: [
+            T('"ada","lovelace" → "AL"', (e, { expect }) => expect(e.initials('ada', 'lovelace')).toBe('AL')),
+            T('"Grace","Hopper" → "GH"', (e, { expect }) => expect(e.initials('Grace', 'Hopper')).toBe('GH')),
+          ],
+        },
+      ],
+    },
+
+    // ───────────────────────────────────────── 4
+    {
+      id: 'decisions',
+      title: 'Making Decisions',
+      time: '20 min',
+      blocks: [
+        { p: 'Programs become powerful when they can **choose** what to do. For that you need booleans (`true` / `false`) and `if` statements.' },
+        { h: 'Comparing values' },
+        { run: 'console.log(5 > 3);    // true\nconsole.log(5 < 3);    // false\nconsole.log(5 >= 5);   // true\nconsole.log(5 === 5);  // true   "strictly equal"\nconsole.log(5 === "5");// false  different types!\nconsole.log(5 !== 6);  // true   "not equal"' },
+        { warn: 'Always use `===` and `!==` (three symbols). The two-symbol `==` secretly converts types and produces surprises like `0 == ""` being `true`.' },
+        { h: 'if / else if / else' },
+        { run: 'const temperature = 22;\n\nif (temperature > 30) {\n  console.log("Hot!");\n} else if (temperature > 15) {\n  console.log("Nice day.");\n} else {\n  console.log("Chilly.");\n}' },
+        { p: 'Only the **first** matching branch runs; the rest are skipped. Order matters!' },
+        { h: 'Combining conditions' },
+        { list: ['`&&` — AND: both sides must be true', '`||` — OR: at least one side true', '`!` — NOT: flips true/false'] },
+        { run: 'const age = 20;\nconst hasTicket = true;\n\nif (age >= 18 && hasTicket) {\n  console.log("Come in");\n}\n\nconsole.log(!hasTicket);        // false\nconsole.log(age < 13 || age > 65); // false' },
+        { h: 'Truthy and falsy' },
+        { p: 'In an `if`, any value is treated as true or false. Only these are **falsy**: `false`, `0`, `""` (empty text), `null`, `undefined`, `NaN`. Everything else is truthy — including `"0"` and `[]`.' },
+        { run: 'if ("") console.log("never prints");\nif ("hi") console.log("text with content is truthy");\n\nconst name = "";\nconsole.log(name || "Anonymous");  // || picks the first truthy value' },
+        { h: 'The ternary: a one-line if/else' },
+        { run: 'const age2 = 16;\nconst label = age2 >= 18 ? "adult" : "minor";\nconsole.log(label);' },
+      ],
+      quiz: [
+        { q: 'What is 3 === "3" ?', options: ['true', 'false', 'An error', 'undefined'], answer: 1, why: 'Different types (number vs string), so strict equality is false.' },
+        { q: 'true && false evaluates to…', options: ['true', 'false', 'undefined', 'An error'], answer: 1, why: 'AND needs both sides true.' },
+        { q: 'Which value is falsy?', options: ['"0"', '[]', '0', '"false"'], answer: 2, why: 'The number 0 is falsy. "0" and [] are truthy (non-empty text, an object).' },
+        { q: 'In an if / else if chain, how many branches run?', options: ['All matching', 'Only the first matching', 'Always the last', 'None'], answer: 1, why: 'JavaScript stops at the first true condition.' },
+      ],
+      exercises: [
+        {
+          id: 'if-1',
+          title: 'Grade calculator',
+          prompt: 'Write `grade(score)`: return `"A"` for 90+, `"B"` for 80–89, `"C"` for 70–79, otherwise `"F"`.',
+          starter: 'function grade(score) {\n  \n}\n',
+          expose: ['grade'],
+          hint: 'Check the biggest threshold first:\nif (score >= 90) return "A";\nelse if (score >= 80) …',
+          solution: 'function grade(score) {\n  if (score >= 90) return "A";\n  if (score >= 80) return "B";\n  if (score >= 70) return "C";\n  return "F";\n}',
+          tests: [
+            T('95 → A', (e, { expect }) => expect(e.grade(95)).toBe('A')),
+            T('90 → A (boundary)', (e, { expect }) => expect(e.grade(90)).toBe('A')),
+            T('85 → B', (e, { expect }) => expect(e.grade(85)).toBe('B')),
+            T('80 → B (boundary)', (e, { expect }) => expect(e.grade(80)).toBe('B')),
+            T('70 → C (boundary)', (e, { expect }) => expect(e.grade(70)).toBe('C')),
+            T('69 → F', (e, { expect }) => expect(e.grade(69)).toBe('F')),
+            T('0 → F', (e, { expect }) => expect(e.grade(0)).toBe('F')),
+          ],
+        },
+        {
+          id: 'if-2',
+          title: 'Can they vote?',
+          prompt: 'Write `canVote(age, isCitizen)` returning `true` only if the person is **18 or older AND a citizen**.',
+          starter: 'function canVote(age, isCitizen) {\n  \n}\n',
+          expose: ['canVote'],
+          hint: 'return age >= 18 && isCitizen;',
+          solution: 'function canVote(age, isCitizen) {\n  return age >= 18 && isCitizen;\n}',
+          tests: [
+            T('20, citizen → true', (e, { expect }) => expect(e.canVote(20, true)).toBe(true)),
+            T('18, citizen → true', (e, { expect }) => expect(e.canVote(18, true)).toBe(true)),
+            T('17, citizen → false', (e, { expect }) => expect(e.canVote(17, true)).toBe(false)),
+            T('30, not citizen → false', (e, { expect }) => expect(e.canVote(30, false)).toBe(false)),
+          ],
+        },
+        {
+          id: 'if-3',
+          title: 'Leap year',
+          prompt: 'Write `isLeapYear(year)`. A year is a leap year if divisible by **4**, **except** years divisible by **100** — unless they are also divisible by **400**. (2000 ✔, 1900 ✘, 2024 ✔, 2023 ✘)',
+          starter: 'function isLeapYear(year) {\n  \n}\n',
+          expose: ['isLeapYear'],
+          hint: 'return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;',
+          solution: 'function isLeapYear(year) {\n  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;\n}',
+          tests: [
+            T('2024 → true', (e, { expect }) => expect(e.isLeapYear(2024)).toBe(true)),
+            T('2023 → false', (e, { expect }) => expect(e.isLeapYear(2023)).toBe(false)),
+            T('1900 → false', (e, { expect }) => expect(e.isLeapYear(1900)).toBe(false)),
+            T('2000 → true', (e, { expect }) => expect(e.isLeapYear(2000)).toBe(true)),
+            T('2100 → false', (e, { expect }) => expect(e.isLeapYear(2100)).toBe(false)),
+          ],
+        },
+        {
+          id: 'if-4',
+          title: 'FizzBuzz (the famous one)',
+          prompt: 'Write `fizzBuzz(n)`:\n- divisible by 3 **and** 5 → `"FizzBuzz"`\n- divisible by 3 → `"Fizz"`\n- divisible by 5 → `"Buzz"`\n- otherwise → the number `n` itself.',
+          starter: 'function fizzBuzz(n) {\n  \n}\n',
+          expose: ['fizzBuzz'],
+          hint: 'Check the "both" case first, otherwise a multiple of 15 would be caught by the Fizz check.',
+          solution: 'function fizzBuzz(n) {\n  if (n % 15 === 0) return "FizzBuzz";\n  if (n % 3 === 0) return "Fizz";\n  if (n % 5 === 0) return "Buzz";\n  return n;\n}',
+          tests: [
+            T('3 → "Fizz"', (e, { expect }) => expect(e.fizzBuzz(3)).toBe('Fizz')),
+            T('5 → "Buzz"', (e, { expect }) => expect(e.fizzBuzz(5)).toBe('Buzz')),
+            T('15 → "FizzBuzz"', (e, { expect }) => expect(e.fizzBuzz(15)).toBe('FizzBuzz')),
+            T('30 → "FizzBuzz"', (e, { expect }) => expect(e.fizzBuzz(30)).toBe('FizzBuzz')),
+            T('7 → 7 (a number)', (e, { expect }) => expect(e.fizzBuzz(7)).toBe(7)),
+          ],
+        },
+      ],
+    },
+
+    // ───────────────────────────────────────── 5
+    {
+      id: 'functions',
+      title: 'Functions',
+      time: '20 min',
+      blocks: [
+        { p: 'A **function** is a reusable recipe. You define it once, then run ("call") it as many times as you like, with different ingredients (**parameters**) each time.' },
+        { run: 'function add(a, b) {\n  return a + b;     // return sends a result back\n}\n\nconsole.log(add(2, 3));     // 5\nconsole.log(add(10, 20));   // 30\nconst result = add(1, 1);   // store the returned value\nconsole.log(result);' },
+        { list: ['**Parameters** are the names inside `( )` when you define: `a`, `b`.', '**Arguments** are the actual values you pass when calling: `2`, `3`.', '`return` hands a value back **and stops** the function immediately.', 'No `return`? The function gives back `undefined`.'] },
+        { warn: 'Printing is not returning! `console.log(x)` shows something to *you*; `return x` gives the value back to the *code that called it*. Tests (and other code) can only use returned values.' },
+        { h: 'Default parameters' },
+        { run: 'function welcome(name = "stranger") {\n  return "Welcome, " + name;\n}\nconsole.log(welcome("Ada"));\nconsole.log(welcome());' },
+        { h: 'Arrow functions' },
+        { p: 'A shorter syntax you will see everywhere. Same idea, fewer characters:' },
+        { run: 'const double = (n) => n * 2;          // one expression: return is implicit\nconst greet = name => ¶Hi $_{name}¶;  // one parameter: brackets optional\nconst area = (w, h) => {              // several lines: use { } and return\n  const result = w * h;\n  return result;\n};\nconsole.log(double(21), greet("Bo"), area(3, 4));' },
+        { h: 'Functions are values' },
+        { p: 'You can store a function in a variable, pass it to another function, or return it. This idea powers almost all modern JavaScript.' },
+        { run: 'function runTwice(action) {\n  action();\n  action();\n}\nrunTwice(() => console.log("Knock!"));' },
+        { tip: 'Good functions do **one thing**, have a clear name (a verb: `calculateTotal`, `isValid`), and return a value instead of printing it.' },
+      ],
+      quiz: [
+        { q: 'What does a function return if it has no return statement?', options: ['0', 'null', 'undefined', '""'], answer: 2, why: 'No return means undefined.' },
+        { q: 'In add(2, 3), what are 2 and 3?', options: ['Parameters', 'Arguments', 'Variables', 'Returns'], answer: 1, why: 'Values you pass in a call are arguments; the names in the definition are parameters.' },
+        { q: 'What does ((n) => n * 2)(4) give?', options: ['4', '2', '8', 'undefined'], answer: 2, why: 'The arrow function doubles its input: 4 × 2 = 8.' },
+        { q: 'What happens to code after a return line?', options: ['It still runs', 'It never runs', 'It runs twice', 'Error'], answer: 1, why: 'return exits the function immediately.' },
+      ],
+      exercises: [
+        {
+          id: 'fn-1',
+          title: 'Arrow: triple',
+          prompt: 'Create an **arrow function** stored in a constant named `triple` that multiplies its input by 3.',
+          starter: 'const triple = \n',
+          expose: ['triple'],
+          hint: 'const triple = (n) => n * 3;',
+          solution: 'const triple = (n) => n * 3;',
+          tests: [
+            T('is a function', (e, { expect }) => expect(e.triple).toBeType('function')),
+            T('triple(3) = 9', (e, { expect }) => expect(e.triple(3)).toBe(9)),
+            T('triple(-2) = -6', (e, { expect }) => expect(e.triple(-2)).toBe(-6)),
+            T('uses arrow syntax', (e, { code, expect }) => expect(code.includes('=>')).toBe(true)),
+          ],
+        },
+        {
+          id: 'fn-2',
+          title: 'Default parameter: power',
+          prompt: 'Write `power(base, exp)`. If `exp` is not provided it should default to **2** (square). `power(3)` → 9, `power(2, 10)` → 1024.',
+          starter: 'function power(base, exp) {\n  \n}\n',
+          expose: ['power'],
+          hint: 'Give exp a default: function power(base, exp = 2) { return base ** exp; }',
+          solution: 'function power(base, exp = 2) {\n  return base ** exp;\n}',
+          tests: [
+            T('power(3) = 9', (e, { expect }) => expect(e.power(3)).toBe(9)),
+            T('power(2, 10) = 1024', (e, { expect }) => expect(e.power(2, 10)).toBe(1024)),
+            T('power(5, 0) = 1', (e, { expect }) => expect(e.power(5, 0)).toBe(1)),
+          ],
+        },
+        {
+          id: 'fn-3',
+          title: 'Max of three',
+          prompt: 'Write `maxOfThree(a, b, c)` returning the biggest of the three numbers. (Try it with `if`s first. `Math.max` is allowed too.)',
+          starter: 'function maxOfThree(a, b, c) {\n  \n}\n',
+          expose: ['maxOfThree'],
+          hint: 'return Math.max(a, b, c);',
+          solution: 'function maxOfThree(a, b, c) {\n  return Math.max(a, b, c);\n}',
+          tests: [
+            T('(1, 2, 3) → 3', (e, { expect }) => expect(e.maxOfThree(1, 2, 3)).toBe(3)),
+            T('(9, 2, 3) → 9', (e, { expect }) => expect(e.maxOfThree(9, 2, 3)).toBe(9)),
+            T('(4, 10, 3) → 10', (e, { expect }) => expect(e.maxOfThree(4, 10, 3)).toBe(10)),
+            T('(-5, -2, -9) → -2', (e, { expect }) => expect(e.maxOfThree(-5, -2, -9)).toBe(-2)),
+          ],
+        },
+        {
+          id: 'fn-4',
+          title: 'Functions as values: applyTwice',
+          prompt: 'Write `applyTwice(fn, x)` that calls the function `fn` on `x`, then calls `fn` again on that result. `applyTwice(n => n + 3, 10)` → 16.',
+          starter: 'function applyTwice(fn, x) {\n  \n}\n',
+          expose: ['applyTwice'],
+          hint: 'return fn(fn(x));',
+          solution: 'function applyTwice(fn, x) {\n  return fn(fn(x));\n}',
+          tests: [
+            T('adds 3 twice', (e, { expect }) => expect(e.applyTwice((n) => n + 3, 10)).toBe(16)),
+            T('works with strings', (e, { expect }) => expect(e.applyTwice((s) => s + '!', 'hi')).toBe('hi!!')),
+            T('doubles twice', (e, { expect }) => expect(e.applyTwice((n) => n * 2, 5)).toBe(20)),
+          ],
+        },
+      ],
+    },
+
+    // ───────────────────────────────────────── 6
+    {
+      id: 'arrays',
+      title: 'Arrays (Lists)',
+      time: '20 min',
+      blocks: [
+        { p: 'An **array** is an ordered list of values. Think of a numbered shelf — the numbering (the **index**) starts at **0**.' },
+        { run: 'const fruits = ["apple", "banana", "cherry"];\n\nconsole.log(fruits[0]);        // "apple"   first\nconsole.log(fruits[2]);        // "cherry"\nconsole.log(fruits.length);    // 3\nconsole.log(fruits[fruits.length - 1]); // last item\nconsole.log(fruits[10]);       // undefined (nothing there)' },
+        { h: 'Adding and removing' },
+        { run: 'const list = [1, 2, 3];\nlist.push(4);        // add to end        → [1,2,3,4]\nlist.pop();          // remove from end   → [1,2,3]\nlist.unshift(0);     // add to start      → [0,1,2,3]\nlist.shift();        // remove from start → [1,2,3]\nconsole.log(list);\nconsole.log(list.includes(2));   // true\nconsole.log(list.indexOf(3));    // 2   (-1 if missing)\nconsole.log(list.join(" - "));   // "1 - 2 - 3"' },
+        { warn: '`push`, `pop`, `shift`, `unshift` **mutate** (change) the original array. A very common source of bugs — see the next tools for making copies instead.' },
+        { h: 'Copying & combining (without mutation)' },
+        { run: 'const a = [1, 2, 3];\nconst b = [...a, 4, 5];       // spread: "unpack a here"\nconst c = [0, ...a];\nconsole.log(a, b, c);\n\nconsole.log(b.slice(1, 3));   // [2, 3]  (from 1 up to, not including, 3)\nconsole.log(a.concat([9]));   // [1,2,3,9]\n\nconst copy = [...a];          // a real copy\ncopy.push(99);\nconsole.log(a);               // a is untouched' },
+        { h: 'Destructuring' },
+        { run: 'const [first, second] = ["gold", "silver", "bronze"];\nconsole.log(first, second);\n\nlet x = 1, y = 2;\n[x, y] = [y, x];   // swap in one line!\nconsole.log(x, y);' },
+        { tip: 'An array assigned to another variable is **not** copied — both names point at the same list. `const b = a; b.push(1)` changes `a` too. Use `[...a]` to copy.' },
+      ],
+      quiz: [
+        { q: 'Given ["a","b","c"], what is the index of "c"?', options: ['3', '2', '1', '0'], answer: 1, why: 'Indexes start at 0: a=0, b=1, c=2.' },
+        { q: 'Which does NOT change the original array?', options: ['push', 'pop', 'slice', 'shift'], answer: 2, why: 'slice returns a new array; the others mutate.' },
+        { q: 'What is [...[1,2], 3]?', options: ['[[1,2],3]', '[1,2,3]', '[3,1,2]', 'Error'], answer: 1, why: 'The spread operator unpacks the inner array in place.' },
+      ],
+      exercises: [
+        {
+          id: 'arr-1',
+          title: 'Last item',
+          prompt: 'Write `lastItem(arr)` that returns the **last** element, or `undefined` for an empty array.',
+          starter: 'function lastItem(arr) {\n  \n}\n',
+          expose: ['lastItem'],
+          hint: 'The last index is arr.length - 1.',
+          solution: 'function lastItem(arr) {\n  return arr[arr.length - 1];\n}',
+          tests: [
+            T('[1,2,3] → 3', (e, { expect }) => expect(e.lastItem([1, 2, 3])).toBe(3)),
+            T('["a"] → "a"', (e, { expect }) => expect(e.lastItem(['a'])).toBe('a')),
+            T('[] → undefined', (e, { expect }) => expect(e.lastItem([])).toBe(undefined)),
+          ],
+        },
+        {
+          id: 'arr-2',
+          title: 'Add to front (without mutating)',
+          prompt: 'Write `addToFront(arr, item)` that returns a **new** array with `item` first. The original array must stay unchanged.',
+          starter: 'function addToFront(arr, item) {\n  \n}\n',
+          expose: ['addToFront'],
+          hint: 'return [item, ...arr];  — unshift would change the original, so avoid it.',
+          solution: 'function addToFront(arr, item) {\n  return [item, ...arr];\n}',
+          tests: [
+            T('[1,2] + 0 → [0,1,2]', (e, { expect }) => expect(e.addToFront([1, 2], 0)).toEqual([0, 1, 2])),
+            T('works on empty array', (e, { expect }) => expect(e.addToFront([], 'x')).toEqual(['x'])),
+            T('does not change the original', (e, { expect }) => {
+              const orig = [1, 2];
+              e.addToFront(orig, 0);
+              expect(orig).toEqual([1, 2]);
+            }),
+          ],
+        },
+        {
+          id: 'arr-3',
+          title: 'Swap the ends',
+          prompt: 'Write `swapEnds(arr)` returning a **new** array where the first and last items trade places. `[1,2,3,4]` → `[4,2,3,1]`. Arrays with fewer than 2 items come back unchanged (as a copy). Don\'t mutate the original.',
+          starter: 'function swapEnds(arr) {\n  \n}\n',
+          expose: ['swapEnds'],
+          hint: 'const copy = [...arr];\nif (copy.length < 2) return copy;\nThen swap copy[0] and copy[copy.length - 1] with destructuring.',
+          solution: 'function swapEnds(arr) {\n  const copy = [...arr];\n  if (copy.length < 2) return copy;\n  const last = copy.length - 1;\n  [copy[0], copy[last]] = [copy[last], copy[0]];\n  return copy;\n}',
+          tests: [
+            T('[1,2,3,4] → [4,2,3,1]', (e, { expect }) => expect(e.swapEnds([1, 2, 3, 4])).toEqual([4, 2, 3, 1])),
+            T('[1,2] → [2,1]', (e, { expect }) => expect(e.swapEnds([1, 2])).toEqual([2, 1])),
+            T('[7] → [7]', (e, { expect }) => expect(e.swapEnds([7])).toEqual([7])),
+            T('[] → []', (e, { expect }) => expect(e.swapEnds([])).toEqual([])),
+            T('original is untouched', (e, { expect }) => {
+              const o = [1, 2, 3];
+              e.swapEnds(o);
+              expect(o).toEqual([1, 2, 3]);
+            }),
+          ],
+        },
+      ],
+    }
+  );
+})();

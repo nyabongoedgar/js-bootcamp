@@ -1,0 +1,10 @@
+{
+  "name": "js-bootcamp",
+  "version": "1.0.0",
+  "description": "Interactive JavaScript course for absolute beginners, with exercises and automatic tests",
+  "scripts": {
+    "test": "node tests/verify.js",
+    "start": "node serve.js"
+  },
+  "license": "MIT"
+}
