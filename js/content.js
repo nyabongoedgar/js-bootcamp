@@ -1,6 +1,6 @@
 /*
- * content.js — assembles the lesson parts into one LESSONS array and
- * converts the authoring shortcuts:  ¶ → `   and   $_{ → ${
+ * content.js — assembles lesson parts into TRACKS and converts the authoring shortcuts:
+ *   ¶ → `   and   $_{ → ${
  * (This lets lesson files contain backticks and ${} without escaping.)
  */
 (function (root) {
@@ -15,7 +15,36 @@
     return value; // functions (tests), numbers, booleans
   }
 
-  const LESSONS = convert(root.LESSON_PARTS || []);
-  if (typeof module !== 'undefined' && module.exports) module.exports = LESSONS;
-  else root.LESSONS = LESSONS;
+  const TRACKS = [
+    {
+      id: 'js',
+      title: 'JavaScript',
+      icon: '🟨',
+      tagline: 'The language of the web — and the foundation for everything else.',
+      level: 'No experience needed',
+      runtime: null,
+      lessons: convert(root.LESSON_PARTS || []),
+    },
+    {
+      id: 'react',
+      title: 'React',
+      icon: '⚛️',
+      tagline: 'Build interactive websites out of reusable components.',
+      level: 'Needs JavaScript basics',
+      runtime: 'react',
+      lessons: convert(root.REACT_PARTS || []),
+    },
+    {
+      id: 'native',
+      title: 'React Native',
+      icon: '📱',
+      tagline: 'Build real iPhone & Android apps with the skills from React.',
+      level: 'Needs JavaScript + React basics',
+      runtime: 'native',
+      lessons: convert(root.NATIVE_PARTS || []),
+    },
+  ].filter((t) => t.lessons.length);
+
+  if (typeof module !== 'undefined' && module.exports) module.exports = TRACKS;
+  else root.TRACKS = TRACKS;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

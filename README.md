@@ -1,32 +1,38 @@
 # JS Bootcamp
 
-An interactive, zero-install JavaScript course for absolute beginners:
-14 lessons · live runnable examples · quizzes · 53 coding exercises with automatic tests.
+Interactive, zero-install courses for absolute beginners. When the app starts you choose a track:
 
-## Run it
-Just open `index.html` in a browser (double-click it). Or serve it:
+| Track | Lessons | Exercises | What runs your code |
+|---|---|---|---|
+| 🟨 **JavaScript** | 14 | 53 | your browser |
+| ⚛️ **React** | 10 | 32 | real React + JSX (bundled in `vendor/`, no internet needed) |
+| 📱 **React Native** | 9 | 24 | a built-in phone simulator that mirrors React Native's components and layout rules |
 
-    npm start        # prints the URL (http://localhost:8000) and opens your browser
-
+Every lesson has live runnable examples, a quiz, coding exercises and automatic tests.
 Progress and your code are saved in the browser (localStorage).
 
-## Course map
-1 Hello JS · 2 Variables & types · 3 Numbers & strings · 4 Decisions · 5 Functions ·
-6 Arrays · 7 Loops · 8 Objects · 9 map/filter/reduce · 10 Scope & closures ·
-11 Errors & debugging · 12 The DOM · 13 Async/await · 14 Final challenges
+## Run it
+    npm start        # prints the URL (http://localhost:8000) and opens your browser
+
+Or just double-click `index.html`.
 
 ## Check the course itself
-    npm test         # node tests/verify.js
+    npm test         # JavaScript track + structure of all tracks, in Node
 
-Verifies that every exercise's reference solution passes all its tests, that no starter
-code passes by accident, and that quizzes are well-formed. (DOM exercises need a browser
-and are skipped in Node.)
+For the React and React Native tracks (they need a real DOM) open
+`tests/browser-verify.html` through `npm start`, i.e. `http://localhost:8000/tests/browser-verify.html`.
+It runs **every** exercise's reference solution (must pass) and starter code (must not pass) and
+shows `109/109 solutions pass`.
 
 ## Layout
     index.html          page shell
     css/style.css       styling (light + dark)
     js/engine.js        runs learner code + test assertions (browser & Node)
+    js/react-runtime.js JSX/hooks runtime and test helpers (mount, click, type…)
+    js/rn-shim.js       the React Native simulator (View, Text, Pressable, FlatList…)
+    vendor/             React 18, ReactDOM 18, Babel (MIT licensed) — loaded only for React tracks
     js/lessons-*.js     the course content: text, examples, quizzes, exercises, tests
+                        (lessons-1/2/3 = JavaScript, lessons-react, lessons-native)
     js/content.js       assembles lessons
     js/app.js           UI, routing, progress
 

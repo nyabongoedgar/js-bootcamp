@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>JS Bootcamp — Learn JavaScript Fast</title>
-  <meta name="description" content="An interactive JavaScript course for absolute beginners, with exercises and automatic tests." />
+  <title>JS Bootcamp — JavaScript, React & React Native</title>
+  <meta name="description" content="Interactive beginner courses in JavaScript, React and React Native, with exercises and automatic tests." />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header class="topbar">
     <button id="menuBtn" class="icon-btn" aria-label="Toggle lesson menu">☰</button>
-    <a class="brand" href="#/home"><span class="logo">JS</span> Bootcamp</a>
+    <a class="brand" href="#/choose"><span class="logo">JS</span> Bootcamp</a>
     <div class="overall" title="Exercises completed">
       <div class="bar"><div id="overallFill"></div></div>
       <span id="overallText">0%</span>
@@ -22,11 +22,15 @@
     <main id="main" class="main" tabindex="-1"></main>
   </div>
 
-  <!-- Course content + engine (order matters) -->
+  <!-- Course content + engine (order matters). React itself (vendor/) loads on demand. -->
   <script src="js/engine.js"></script>
   <script src="js/lessons-1.js"></script>
   <script src="js/lessons-2.js"></script>
   <script src="js/lessons-3.js"></script>
+  <script src="js/lessons-react.js"></script>
+  <script src="js/lessons-native.js"></script>
+  <script src="js/rn-shim.js"></script>
+  <script src="js/react-runtime.js"></script>
   <script src="js/content.js"></script>
   <script src="js/app.js"></script>
 </body>

@@ -7,13 +7,23 @@
  */
 const path = require('path');
 const Engine = require(path.join(__dirname, '../js/engine.js'));
-['lessons-1', 'lessons-2', 'lessons-3'].forEach((f) => require(path.join(__dirname, '../js/' + f + '.js')));
-const LESSONS = require(path.join(__dirname, '../js/content.js'));
+['lessons-1', 'lessons-2', 'lessons-3', 'lessons-react', 'lessons-native'].forEach((f) => require(path.join(__dirname, '../js/' + f + '.js')));
+const TRACKS = require(path.join(__dirname, '../js/content.js'));
+const LESSONS = TRACKS.find((t) => t.id === 'js').lessons; // React tracks need a browser: open tests/browser-verify.html
 
 (async () => {
   let ok = 0, bad = 0, skipped = 0;
   const problems = [];
   const ids = new Set();
+
+  for (const track of TRACKS) {
+    for (const l of track.lessons) {
+      if (!l.exercises.length || !l.quiz.length) problems.push(`${l.id}: needs quiz and exercises`);
+      for (const ex of l.exercises) {
+        if (!ex.tests.length || !ex.hint || !ex.solution || ex.starter == null) problems.push(`${ex.id}: incomplete exercise`);
+      }
+    }
+  }
 
   for (const lesson of LESSONS) {
     if (ids.has(lesson.id)) problems.push('duplicate lesson id ' + lesson.id);

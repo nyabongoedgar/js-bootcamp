@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Course self-check (browser)</title>
+  <style>body{font:14px/1.5 ui-monospace,monospace;padding:20px} .ok{color:#1b9a55} .bad{color:#d23a4a}</style>
+</head>
+<body>
+  <h1>Course self-check</h1>
+  <p>Runs every exercise's reference solution (must pass) and starter code (must not pass) in a real browser, for all three tracks.</p>
+  <pre id="out">running…</pre>
+  <script src="../vendor/react.development.js"></script>
+  <script src="../vendor/react-dom.development.js"></script>
+  <script src="../vendor/babel.min.js"></script>
+  <script src="../js/engine.js"></script>
+  <script src="../js/lessons-1.js"></script>
+  <script src="../js/lessons-2.js"></script>
+  <script src="../js/lessons-3.js"></script>
+  <script src="../js/lessons-react.js"></script>
+  <script src="../js/lessons-native.js"></script>
+  <script src="../js/rn-shim.js"></script>
+  <script src="../js/react-runtime.js"></script>
+  <script src="../js/content.js"></script>
+  <script>
+    (async () => {
+      const out = document.getElementById('out');
+      const problems = [];
+      let ok = 0, total = 0;
+      for (const track of TRACKS) {
+        for (const lesson of track.lessons) {
+          for (const ex of lesson.exercises) {
+            total++;
+            const make = () => {
+              const pg = document.createElement('div');
+              document.body.append(pg);
+              return pg;
+            };
+            const run = async (code) => {
+              const pg = make();
+              const runtime = track.runtime ? ReactRT.create(track.runtime) : null;
+              try { return await Engine.runExercise(code, ex, { playground: pg, runtime }); }
+              finally { ReactRT.resetPreview(pg); pg.remove(); }
+            };
+            const sol = await run(ex.solution);
+            if (sol.error) problems.push(`[${track.id}] ${ex.id}: solution crashed — ${sol.error}`);
+            else if (!sol.passed) problems.push(`[${track.id}] ${ex.id}: solution fails — ` + sol.results.filter((r) => !r.pass).map((r) => `${r.name} (${r.message})`).join('; '));
+            else ok++;
+            const start = await run(ex.starter);
+            if (start.passed) problems.push(`[${track.id}] ${ex.id}: STARTER ALREADY PASSES`);
+          }
+        }
+      }
+      out.innerHTML = `<span class="${problems.length ? 'bad' : 'ok'}">${ok}/${total} solutions pass</span>\n` +
+        (problems.length ? problems.map((p) => '✗ ' + p.replace(/</g, '&lt;')).join('\n') : 'All good.');
+      document.title = problems.length ? 'FAIL' : 'PASS';
+    })();
+  </script>
+</body>
+</html>

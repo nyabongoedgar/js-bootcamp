@@ -128,18 +128,30 @@
    */
   async function runExercise(code, exercise, opts) {
     opts = opts || {};
+    const rt = opts.runtime || null; // optional runtime (React / React Native) — see react-runtime.js
     const logs = [];
     const names = exercise.expose || [];
     const out = { logs, error: null, results: [], passed: false };
 
+    try {
+      if (rt && rt.attach) rt.attach(logs);
+      return await execute(code, exercise, opts, rt, logs, names, out);
+    } finally {
+      if (rt && rt.finish) rt.finish();
+    }
+  }
+
+  async function execute(code, exercise, opts, rt, logs, names, out) {
     let env = {};
     try {
       const tail =
         '\n;return {' +
         names.map((n) => JSON.stringify(n) + ': (typeof ' + n + ' === "undefined" ? undefined : ' + n + ')').join(',') +
         '};';
-      const fn = new AsyncFunction('console', 'playground', guardLoops(code) + tail);
-      env = await withTimeout(fn(makeConsole(logs), opts.playground), 4000, 'Your code took longer than 4 seconds to finish.');
+      const source = rt ? rt.transform(code) : code;
+      const scope = Object.assign({ console: makeConsole(logs), playground: opts.playground }, rt ? rt.scope(opts.playground) : {});
+      const fn = new AsyncFunction(...Object.keys(scope), guardLoops(source) + tail);
+      env = await withTimeout(fn(...Object.values(scope)), 4000, 'Your code took longer than 4 seconds to finish.');
     } catch (e) {
       out.error = (e && e.name ? e.name : 'Error') + ': ' + (e && e.message ? e.message : e);
       return out;
@@ -149,7 +161,7 @@
     if (!tests.length) return out;
 
     const missing = names.filter((n) => env[n] === undefined);
-    const ctx = { logs, code, playground: opts.playground, expect, show };
+    const ctx = Object.assign({ logs, code, playground: opts.playground, expect, show }, rt ? rt.ctx(opts.playground) : {});
 
     for (const t of tests) {
       if (missing.length) {
